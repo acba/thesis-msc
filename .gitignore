@@ -1,0 +1,8 @@
+*.log
+*.lot
+*.out
+*.lof
+*.toc
+*.gz
+*.project
+*.texlipse
