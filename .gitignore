@@ -6,3 +6,11 @@
 *.gz
 *.project
 *.texlipse
+*.aux
+thesis/*.pdf
+*.bbl
+*.blg
+.idea/
+__pycache__/
+*.lprof
+
