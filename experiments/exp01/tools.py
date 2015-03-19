@@ -13,7 +13,7 @@ def non_parametric_check_samples(samples, significance=.05):
 
     # Null hypothesis samples are equals distributions
 
-    print(samples)
+    # print(samples)
 
     # Perform 'Kruskal-Wallis H-test' non parametric test
     h_statistic, p_value = stats.kruskal(*samples)
@@ -72,6 +72,29 @@ def matrix_non_parametric_paired_test(samples):
                 nparam[i, j] = r
 
     return nparam
+
+
+def check(filename):
+
+    if os.path.exists(filename):
+        result = pickle.load(open(filename, 'rb'))
+
+        if result["finished"]:
+            return False
+        else:
+            return True
+
+    else:
+        return True
+
+
+
+
+
+
+
+
+
 
 # data = [[0.038276776980954046, 0.038278290485972498, 0.038260110575184414,
 #          0.038276684460136989, 0.03825459687413521, 0.038278262143575215, 0.038276697554263495, 0.038276848056863502, 0.038299042466280894, 0.038313960261609034, 0.038253778246018617, 0.038277644536465205, 0.038277261948407283, 0.038280358547992763, 0.038276644327923742],
