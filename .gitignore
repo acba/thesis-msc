@@ -13,4 +13,4 @@ thesis/*.pdf
 .idea/
 __pycache__/
 *.lprof
-
+.old/

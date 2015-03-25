@@ -4,20 +4,18 @@ import os
 import datetime
 from tools import *
 
-try:
-    import mkl
-    mkl.set_num_threads(8)
-except ImportError:
-    print("MKL not found")
+# try:
+#     import mkl
+#     mkl.set_num_threads(8)
+# except ImportError:
+#     print("MKL not found")
 
 import pai
-from pai.portfolio import get_data
-
 
 assets = open('ibovespa.txt', 'r').read().split('\n')
 results_path = "results/"
-search_functions = ["random search", "grid search", "particle swarm",
-                    "nelder-mead", "cma-es"]
+search_function = "particle swarm"
+evals = [10, 30, 50, 80, 100, 150, 200]
 
 
 def run(name):
@@ -39,35 +37,34 @@ def run(name):
 
                 result = {"finished": False}
 
-                for f in search_functions:
-                    result[f] = {}
+                for ev in evals:
+                    result[ev] = {}
 
-                    print(asset, f)
+                    print(asset, ev)
 
                     metrics = []
                     time = []
                     for it in range(50):
                         start = datetime.datetime.now()
                         r.search_param(database=data, cv="ts", cv_nfolds=10,
-                                       of="rmse", opt_f=f, eval=50,
-                                       print_log=False,
-                                       kf=["rbf"], f=["sigmoid"])
+                                       of="rmse", opt_f=search_function, eval=ev,
+                                       print_log=False, kf=["rbf"], f=["sigmoid"])
                         end = datetime.datetime.now()
                         delta = end - start
 
                         time.append(delta.total_seconds())
                         metrics.append(r.regressor.cv_best_error)
 
-                    result[f]["cv"] = metrics
-                    result[f]["cv_mean"] = np.mean(metrics)
-                    result[f]["cv_std"] = np.std(metrics)
+                    result[ev]["cv"] = metrics
+                    result[ev]["cv_mean"] = np.mean(metrics)
+                    result[ev]["cv_std"] = np.std(metrics)
 
-                    result[f]["time"] = time
-                    result[f]["time_mean"] = np.mean(time)
-                    result[f]["time_std"] = np.std(time)
+                    result[ev]["time"] = time
+                    result[ev]["time_mean"] = np.mean(time)
+                    result[ev]["time_std"] = np.std(time)
 
-                cvs = [result[f]["cv"] for f in search_functions]
-                ts = [result[f]["time"] for f in search_functions]
+                cvs = [result[ev]["cv"] for ev in evals]
+                ts = [result[ev]["time"] for ev in evals]
 
                 # Create paired test matrices only if exists differences among
                 # sample distributions
