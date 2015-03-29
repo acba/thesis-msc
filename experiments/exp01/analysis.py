@@ -1,19 +1,5 @@
 from main import *
 
-def mean_std(mx, name="", bprint=False):
-
-    mx_mean = np.mean(mx, axis=0)
-    mx_std = np.std(mx, axis=0)
-
-    if bprint:
-        print(mx.shape)
-        print(name, ":")
-        print(mx)
-        print(name, "mean: ", mx_mean)
-        print(name, "std: ", mx_std)
-
-    return mx_mean, mx_std
-
 
 def analysis(name):
     time_means_mx = []
@@ -27,9 +13,20 @@ def analysis(name):
             result = pickle.load(open(filename, 'rb'))
 
             if result["finished"]:
-                # print(name, "Asset: ", asset)
-                # print(result["cv_nparam"])
-                # print()
+                print(name, "Asset: ", asset)
+
+                if "cv_nparam" not in result:
+                    print()
+                    for i in search_functions:
+                        print(i)
+                        print(result[i]["cv"])
+
+                    tests = [result[sf]["cv"] for sf in search_functions]
+                    print(non_parametric_check_samples(tests))
+                    test_nparam = matrix_non_parametric_paired_test(tests)
+                    print("cv_nparam")
+                    print(test_nparam)
+
 
                 ranks = []
                 time_means = []
@@ -38,8 +35,9 @@ def analysis(name):
                     cv_means.append(result[search_functions[i]]["cv_mean"])
                     time_means.append(result[search_functions[i]]["time_mean"])
                     ranks.append(np.sum(result["cv_nparam"][i, :]))
-                    # sum = np.sum(result["cv_nparam"][i, :])
-                    # print(search_functions[i], " is worst than ", sum, " functions")
+
+                #     sum = np.sum(result["cv_nparam"][i, :])
+                #     print(search_functions[i], " is worst than ", sum, " functions")
                 # print()
 
                 cv_means_mx.append(cv_means)
@@ -59,12 +57,21 @@ def analysis(name):
     ts_mean, ts_std = mean_std(ts, "ts")
     rk_mean, rk_std = mean_std(rk, "rk")
 
+    print()
+    print("Search Function | Ranking Sums")
+    for j, sf in enumerate(search_functions):print(sf, ": ", np.sum(rk[:, j]))
+    print()
+
     rk_samples = [rk[:, j] for j in range(rk.shape[1])]
+    print("Rankings have same distribution: ",
+          non_parametric_check_samples(rk_samples))
+
     rk_final = matrix_non_parametric_paired_test(rk_samples)
     # print("Rk final:")
     # print(rk_final)
     # print()
 
+    print(rk.shape)
     print("(Search Function | Rank | Rank Mean | Time Mean)")
     rank = [(search_functions[i], np.sum(rk_final[i, :]), rk_mean[i], ts_mean[i]) for i in range(rk_final.shape[0])]
     rank = sorted(rank, key=lambda f: f[1] + f[2])

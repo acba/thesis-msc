@@ -1,21 +1,6 @@
 from main import *
 
 
-def mean_std(mx, name="", bprint=False):
-
-    mx_mean = np.mean(mx, axis=0)
-    mx_std = np.std(mx, axis=0)
-
-    if bprint:
-        print(mx.shape)
-        print(name, ":")
-        print(mx)
-        print(name, "mean: ", mx_mean)
-        print(name, "std: ", mx_std)
-
-    return mx_mean, mx_std
-
-
 def analysis(name):
     time_means_mx = []
     cv_means_mx = []
@@ -28,9 +13,22 @@ def analysis(name):
             result = pickle.load(open(filename, 'rb'))
 
             if result["finished"]:
-                # print(name, "Asset: ", asset)
+                print(name, "Asset: ", asset)
                 # print(result["cv_nparam"])
                 # print()
+
+                if "cv_nparam" not in result:
+                    print()
+                    for i in evals:
+                        print(i)
+                        print(result[i]["cv"])
+
+                    tests = [result[sf]["cv"] for sf in evals]
+                    print(non_parametric_check_samples(tests))
+                    test_nparam = matrix_non_parametric_paired_test(tests)
+                    print("cv_nparam")
+                    print(test_nparam)
+
 
                 ranks = []
                 time_means = []
@@ -59,14 +57,21 @@ def analysis(name):
     cv_mean, cv_std = mean_std(cv, "cv")
     ts_mean, ts_std = mean_std(ts, "ts")
     rk_mean, rk_std = mean_std(rk, "rk")
+    print()
+    print("Evaluations | Ranking Sums")
+    for j, ev in enumerate(evals):print(ev, ": ", np.sum(rk[:, j]))
+    print()
 
     rk_samples = [rk[:, j] for j in range(rk.shape[1])]
+    print("Rankings have same distribution: ",
+          non_parametric_check_samples(rk_samples))
     rk_final = matrix_non_parametric_paired_test(rk_samples)
     # print("Rk final:")
     # print(rk_final)
     # print()
 
-    print("(Eval | Rank | Rank Mean | Time Mean)")
+    print(rk.shape)
+    print("(Evaluations | Rank | Rank Mean | Time Mean)")
     rank = [(evals[i], np.sum(rk_final[i, :]), rk_mean[i], ts_mean[i]) for i in range(rk_final.shape[0])]
     rank = sorted(rank, key=lambda f: f[1] + f[2])
     print()
@@ -84,12 +89,12 @@ if __name__ == "__main__":
     print()
     analysis("elmk")
 
-    # print()
-    # print("Analysis ELMR")
-    # print()
-    # analysis("elmr")
+    print()
+    print("Analysis ELMR")
+    print()
+    analysis("elmr")
 
-    # print()
-    # print("Analysis SVR")
-    # print()
-    # analysis("svr")
+    print()
+    print("Analysis SVR")
+    print()
+    analysis("svr")

@@ -88,6 +88,30 @@ def check(filename):
         return True
 
 
+def mean_std(mx, name="", bprint=False):
+
+    mx_mean = np.mean(mx, axis=0)
+    mx_std = np.std(mx, axis=0)
+
+    if bprint:
+        print(mx.shape)
+        print(name, ":")
+        print(mx)
+        print(name, "mean: ", mx_mean)
+        print(name, "std: ", mx_std)
+
+    return mx_mean, mx_std
+
+
+def adj(ranks):
+
+    un = np.unique(ranks)
+    adj_ranks = np.array(ranks)
+
+    for adj_rank, u in enumerate(un):
+        adj_ranks[adj_ranks == u] = adj_rank
+
+    return adj_ranks.tolist()
 
 
 

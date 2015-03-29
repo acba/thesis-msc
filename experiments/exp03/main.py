@@ -75,6 +75,7 @@ def run():
                         result[reg]["time"] = time
                         result[reg]["time_mean"] = np.mean(time)
                         result[reg]["time_std"] = np.std(time)
+
                         result[reg]["finished"] = True
 
                         print("***********************")

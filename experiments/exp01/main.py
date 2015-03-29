@@ -1,14 +1,4 @@
-import numpy as np
-import pickle
-import os
-import datetime
 from tools import *
-
-try:
-    import mkl
-    mkl.set_num_threads(8)
-except ImportError:
-    print("MKL not found")
 
 import pai
 from pai.portfolio import get_data
@@ -22,17 +12,21 @@ search_functions = ["random search", "grid search", "particle swarm",
 
 def run(name):
 
+    # Init regressor
     r = pai.Regressor(name)
 
     if not os.path.exists(results_path):
         os.makedirs(results_path)
 
+    # Iterate over assets list
     for i, asset in enumerate(assets):
 
         filename = results_path + name + "_" + asset + ".p"
 
+        # Check if need to run this asset
         if check(filename):
             try:
+                # Get data and create dataset matrix
                 stock = get_data(asset)
                 stock.create_database(4, series_type="return")
                 data = stock.get_database()
@@ -80,10 +74,9 @@ def run(name):
                     result["t_nparam"] = t_nparam
 
                 result["finished"] = True
-                pickle.dump(result, open(filename, "wb"))
 
-                import pprint
-                pprint.pprint(result)
+                # Save data
+                pickle.dump(result, open(filename, "wb"))
 
             except:
                 print("Error: ", asset)
