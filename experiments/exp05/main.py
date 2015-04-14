@@ -17,7 +17,7 @@ assets = open('ibovespa.txt', 'r').read().split('\n')
 results_path = "results/"
 search_function = "particle swarm"
 eval = 100
-nfold = 10
+nfold = 5
 cvs = ["ts", "ets", "kfold", "npkfold"]
 
 
@@ -52,7 +52,7 @@ def run(name):
 
                         metrics = []
                         time = []
-                        for it in range(50):
+                        for it in range(5):
                             start = datetime.datetime.now()
 
                             # Search for best hyper parameters
@@ -67,7 +67,7 @@ def run(name):
                             # Train with 80% of dataset using parameters found
                             tr_result = r.train(tr, params)
                             te_result = r.test(te)
-                            # print(te_result.get("rmse"))
+                            print(te_result.get("rmse"))
 
                             end = datetime.datetime.now()
                             delta = end - start
@@ -81,7 +81,7 @@ def run(name):
 
                         # print()
                         # print(result[cv]["test"])
-                        # print(result[cv]["test_mean"], result[cv]["test_std"])
+                        print(result[cv]["test_mean"], result[cv]["test_std"])
 
                         result[cv]["time"] = time
                         result[cv]["time_mean"] = np.mean(time)

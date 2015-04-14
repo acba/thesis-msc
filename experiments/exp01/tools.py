@@ -5,8 +5,11 @@ import datetime
 from scipy import stats
 import scipy
 
+
 import pai
 from pai.portfolio import get_data
+
+colors = ["r", "g", "b", "k", "c", "m", "y"]
 
 
 def non_parametric_check_samples(samples, significance=.05):
@@ -112,9 +115,6 @@ def adj(ranks):
         adj_ranks[adj_ranks == u] = adj_rank
 
     return adj_ranks.tolist()
-
-
-
 
 
 
